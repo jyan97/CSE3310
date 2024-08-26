@@ -1,7 +1,7 @@
 # CSE3310: Creating a Demo Android App with Login Screen
 Jingquan Yan
 Demo zip (use Android Studio File/New/Import Project): 
-https://drive.google.com/file/d/1B9tpoaP4A1f9gVMCBJilRLuUto0SvEc5/view?usp=sharing
+https://github.com/jyan97/CSE3310/
 09/2024
 
 ## 1. Set up Android Studio
@@ -286,4 +286,199 @@ If you add more activities to your app in the future, you'll need to declare the
    - Tap the "Login" button.
    - You should see "Invalid credentials" displayed on the screen.
 
-   <img src="3.png" width="600">
+   <img src="3.png" width="400">
+
+
+   ***
+   ***
+
+## 8. Adding a new activity
+   What if we want to jump to a new page once logged in? We will need to add a new activity (page) and its corresponding layout. Also modify the logic in the MainActivity and declare the new activity in ``AndroidManifest.xml``.
+
+### 8.1 Modify the Login Page Layout (activity_main.xml)
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editTextUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username" />
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login" />
+
+</LinearLayout>
+```
+This layout creates a simple login form with username and password fields, and a login button (no more login notification text).
+
+### 8.2 Create a new layout ``activity_success.xml``
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login successfully"
+        android:textSize="24sp"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/buttonLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log out" />
+
+</LinearLayout>
+```
+
+This layout creates a success page with a "Login successfully" message and a logout button.
+
+### 8.3 Modify the Login Logic in ``MainActivity.java``
+
+```java
+package com.example.logindemo;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText editTextUsername, editTextPassword;
+    private Button buttonLogin;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        editTextUsername = findViewById(R.id.editTextUsername);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        buttonLogin = findViewById(R.id.buttonLogin);
+
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username = editTextUsername.getText().toString(); // Get string from the box
+                String password = editTextPassword.getText().toString();
+
+                // The credential is hard-coded here, we can also query from database
+                if (username.equals("demo") && password.equals("password")) {
+                    // Successful login
+                    Intent intent = new Intent(MainActivity.this, SuccessActivity.class);
+                    startActivity(intent);
+                } else {
+                    // Failed login
+                    Toast.makeText(MainActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+}
+```
+
+This activity handles the login logic:
+- It sets up the UI elements from the layout.
+- When the login button is clicked, it checks the entered credentials.
+- If login is successful, it starts the SuccessActivity and optionally closes the MainActivity.
+- If login fails, it displays a toast message.
+
+### 8.4 Create a new activity ``SuccessActivity.java`` after logging in
+
+```java
+package com.example.logindemo;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class SuccessActivity extends AppCompatActivity {
+
+    private Button buttonLogout;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_success);
+
+        buttonLogout = findViewById(R.id.buttonLogout);
+        buttonLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate back to MainActivity (login page)
+                Intent intent = new Intent(SuccessActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish(); // Close this activity, otherwise one can get back by swiping even after logging out
+            }
+        });
+    }
+}
+```
+
+This activity handles the success page:
+- It sets up the UI elements from the success layout.
+- When the logout button is clicked, it starts a new instance of MainActivity and closes the SuccessActivity.
+
+### 8.5 Update ``AndroidManifest.xml`` and declare the new activity ``SuccessActivity``
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.logindemo">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    
+        <activity android:name=".SuccessActivity" />
+    </application>
+</manifest>
+```
+
+The AndroidManifest.xml file declares both activities:
+- MainActivity is set as the launcher activity (the entry point of the app).
+- SuccessActivity is also declared, allowing it to be started from MainActivity.
+
+## 9. Result
+
+<img src="4.png" width="400">
