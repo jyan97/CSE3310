@@ -15,8 +15,8 @@ https://github.com/jyan97/CSE3310/
 1. On the Android Studio welcome screen, click "Create New Project".
 2. In the "Select a Project Template" window, choose "Empty Activity" and click "Next".
 3. Configure your project with the following details:
-   - Name: "cse3310demo"
-   - Package name: "com.example.cse3310demo"
+   - Name: "logindemo"
+   - Package name: "com.example.logindemo"
    - Save location: Choose your preferred directory
    - Language: Java
    - Minimum SDK: API 24: Android 7.0 (an example)
