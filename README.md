@@ -60,7 +60,7 @@ The AVD will now boot up. This may take a few moments, especially the first time
 
 We'll create a simple layout with input fields for username and password, a login button, and a text view to display the result.
 
-1. In the Project view, navigate to `res/layout/activity_main.xml`.
+1. In the Project view, navigate to `login_demo/app/main/res` and create a directory "layout" by right clicking on the "res" folder -> New -> Directory. Then create a new layout called `activity_main` in the `layout` directory by right clicking on the `layout` folder -> New -> New Layout Resource File.
 2. Switch to the "Code" view if you're in the Design view.
 3. Replace the existing code with the following XML:
 
